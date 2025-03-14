@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error("Error cargando los productos:", error));
 });
 
-let carrito = [];
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+let total = 1500;
 
 function mostrarProductos(productos) {
     const contenedor = document.getElementById("productos");
@@ -32,14 +33,14 @@ function agregarAlCarrito(id, nombre, precio) {
     const cantidad = parseInt(document.getElementById(`cantidad-${id}`).value) || 1;
     const item = { id, nombre, precio, cantidad };
     carrito.push(item);
+    localStorage.setItem("carrito", JSON.stringify(carrito));
     actualizarCarrito();
 }
-let total = 1500;
 
 function actualizarCarrito() {
     const lista = document.getElementById("carrito");
     lista.innerHTML = "";
-    let total = 1500;
+    total = 1500;
     carrito.forEach(item => {
         total += item.precio * item.cantidad;
         const li = document.createElement("li");
@@ -48,17 +49,16 @@ function actualizarCarrito() {
         lista.appendChild(li);
     });
     document.getElementById("total").textContent = total;
-    
 }
 
 function liquidarPedido() {
     if (carrito.length === 0) {
         alert("No has seleccionado productos para liquidar el pedido.");
     } else {
-        alert("Pedido liquidado. Total: $" + document.getElementById("total").textContent);
+        alert("Pedido liquidado. Total: $" + total);
         carrito = [];
+        localStorage.setItem("carrito", JSON.stringify(carrito));
         actualizarCarrito();
         document.querySelectorAll("input[type='number']").forEach(input => input.value = "");
-        document.querySelectorAll("input[type='checkbox']").forEach(checkbox => checkbox.checked = false);
     }
 }
